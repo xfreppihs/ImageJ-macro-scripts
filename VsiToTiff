@@ -1,0 +1,8 @@
+dir=getInfo("image.directory")
+name = File.nameWithoutExtension()
+run("Split Channels"); 
+close(); 
+run("Flip Horizontally");
+saveAs("Tiff", dir+name+".tif"); 
+close(); 
+close(); 
