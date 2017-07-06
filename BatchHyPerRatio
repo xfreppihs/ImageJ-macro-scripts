@@ -1,0 +1,29 @@
+dir = getDirectory("Choose a Directory ");
+list = getFileList(dir);
+setBatchMode(true);
+for (i=0; i<list.length; i++) {
+showProgress(i+1, list.length); 
+path = dir+list[i];
+run("Bio-Formats Importer", "open=path color_mode=Default view=Hyperstack stack_order=XYCZT series_1");
+name = getTitle();
+run("Split Channels");
+C1 = "C1-"+name;
+C2 = "C2-"+name;
+C3 = "C3-"+name;
+close(C3);
+selectWindow(C2);
+run("Gaussian Blur...", "sigma=1");
+run("32-bit");
+selectWindow(C1);
+run("Gaussian Blur...", "sigma=1");
+run("32-bit");
+setAutoThreshold("Default dark");
+//run("Threshold...");
+run("NaN Background");
+imageCalculator("Divide create 32-bit", C2, C1);
+selectWindow("Result of "+C2);
+run("Measure");
+close();
+close();
+close();
+}
