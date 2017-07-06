@@ -1,0 +1,17 @@
+dir = getDirectory("Choose a Directory ");
+list = getFileList(dir);
+setBatchMode(true);
+for (i=0; i<list.length; i++) {
+showProgress(i+1, list.length); 
+path = dir+list[i];
+run("Bio-Formats Importer", "open=path color_mode=Default view=Hyperstack stack_order=XYCZT series_1");
+run("Split Channels");
+close();
+run("Flip Horizontally");
+dotIndex = lastIndexOf(path, ".");
+if (dotIndex!=-1)
+path = substring(path, 0, dotIndex); // remove extension
+save(path+".tif");
+close();
+close();
+}
