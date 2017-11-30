@@ -1,0 +1,42 @@
+Dialog.create("Brightness and Contrast");
+Dialog.addMessage("Set Display Range");
+Dialog.addNumber("C1 Minimum displayed value:",0);
+Dialog.addNumber("C1 Maximum displayed value:",0);
+Dialog.addNumber("C2 Minimum displayed value:",0);
+Dialog.addNumber("C2 Maximum displayed value:",0);
+Dialog.show;
+C1_min = Dialog.getNumber();
+C1_max = Dialog.getNumber();
+C2_min = Dialog.getNumber();
+C2_max = Dialog.getNumber();
+//process open images
+setBatchMode(true);
+imgArray = newArray(nImages);
+for (i=0; i<nImages; i++) {
+selectImage(i+1);
+imgArray[i] = getImageID(); 
+}
+//now we have a list of all open images, we can work on it:
+for (i=0; i< imgArray.length; i++) {
+selectImage(imgArray[i]);
+// INSERT MACRO HERE
+dir=getInfo("image.directory");
+name = getTitle();
+name = replace(name,".czi","");
+selectWindow(name+".czi");
+run("Split Channels");
+C1 = "C1-"+name;
+C2 = "C2-"+name;
+selectWindow(C2+".czi");
+setMinAndMax(C2_min, C2_max);
+selectWindow(C1+".czi");
+setMinAndMax(C1_min, C1_max);
+run("Merge Channels...", "c5=["+C1+".czi] c6=["+C2+".czi] create keep");
+saveAs("PNG", dir+name+".png");
+selectWindow(C2+".czi");
+saveAs("PNG", dir+name+"_C2.png");
+close();
+selectWindow(C1+".czi");
+saveAs("PNG", dir+name+"_C1.png");
+close();
+}
