@@ -1,0 +1,64 @@
+dir=getInfo("image.directory");
+name = File.nameWithoutExtension();
+run("Split Channels");
+C1 = "C1-"+name;
+C2 = "C2-"+name;
+
+selectWindow(C2+".czi");
+//rewriting "Auto contrast adjustment" button of "Brightness/Contrast" 
+AUTO_THRESHOLD = 5000; 
+getRawStatistics(pixcount); 
+limit = pixcount/10; 
+threshold = pixcount/AUTO_THRESHOLD; 
+nBins = 256; 
+getHistogram(values, histA, nBins); 
+i = -1; 
+found = false; 
+do { 
+         counts = histA[++i]; 
+         if (counts > limit) counts = 0; 
+         found = counts > threshold; 
+} while ((!found) && (i < histA.length-1)) 
+hmin = values[i]; 
+
+i = histA.length; 
+do { 
+         counts = histA[--i]; 
+         if (counts > limit) counts = 0; 
+         found = counts > threshold; 
+} while ((!found) && (i > 0)) 
+hmax = values[i]; 
+
+setMinAndMax(hmin, hmax); 
+
+selectWindow(C1+".czi");
+AUTO_THRESHOLD = 5000; 
+getRawStatistics(pixcount); 
+limit = pixcount/10; 
+threshold = pixcount/AUTO_THRESHOLD; 
+nBins = 256; 
+getHistogram(values, histA, nBins); 
+i = -1; 
+found = false; 
+do { 
+         counts = histA[++i]; 
+         if (counts > limit) counts = 0; 
+         found = counts > threshold; 
+} while ((!found) && (i < histA.length-1)) 
+hmin = values[i]; 
+
+i = histA.length; 
+do { 
+         counts = histA[--i]; 
+         if (counts > limit) counts = 0; 
+         found = counts > threshold; 
+} while ((!found) && (i > 0)) 
+hmax = values[i]; 
+
+setMinAndMax(hmin, hmax); 
+run("Merge Channels...", "c5=["+C1+".czi] c6=["+C2+".czi] create keep");
+saveAs("PNG", dir+name+".png");
+selectWindow(C2+".czi");
+saveAs("PNG", dir+name+"_C2.png");
+selectWindow(C1+".czi");
+saveAs("PNG", dir+name+"_C1.png");
