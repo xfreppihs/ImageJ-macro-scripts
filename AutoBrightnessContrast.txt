@@ -1,5 +1,6 @@
 dir=getInfo("image.directory");
-name = File.nameWithoutExtension();
+name = getTitle();
+name = replace(name,".czi","");
 run("Split Channels");
 C1 = "C1-"+name;
 C2 = "C2-"+name;
